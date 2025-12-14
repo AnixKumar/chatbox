@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h3>Private WebSocket Chat</h3>
+
+  <input id="username" placeholder="Your name" />
+  <button onclick="register()">Register</button>
+  <br><br>
+
+  <input id="to" placeholder="Send to" />
+  <input id="msg" placeholder="Message" />
+  <button onclick="send()">Send</button>
+
+  <ul id="chat"></ul>
+
+  <script>
+    const ws = new WebSocket("wss://lloyd-lawful-alina.ngrok-free.dev/");
+
+    function register() {
+      const username = document.getElementById("username").value;
+      ws.send(JSON.stringify({
+        type: "register",
+        username
+      }));
+    }
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const li = document.createElement("li");
+      li.innerText = `${data.from}: ${data.text}`;
+      document.getElementById("chat").appendChild(li);
+    };
+
+    function send() {
+      const to = document.getElementById("to").value;
+      const text = document.getElementById("msg").value;
+      ws.send(JSON.stringify({
+        type: "chat",
+        to,
+        text
+      }));
+    }
+  </script>
+</body>
+</html>
